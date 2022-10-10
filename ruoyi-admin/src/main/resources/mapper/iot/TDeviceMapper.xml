@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.iot.mapper.TDeviceMapper">
+    
+    <resultMap type="TDevice" id="TDeviceResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="station"    column="station"    />
+        <result property="temperature"    column="temperature"    />
+        <result property="waterlevel"    column="waterlevel"    />
+        <result property="uptime"    column="uptime"    />
+    </resultMap>
+
+    <sql id="selectTDeviceVo">
+        select id, name, station, temperature, waterlevel, uptime from t_device
+    </sql>
+
+    <select id="selectTDeviceList" parameterType="TDevice" resultMap="TDeviceResult">
+        <include refid="selectTDeviceVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="station != null "> and station = #{station}</if>
+            <if test="temperature != null "> and temperature = #{temperature}</if>
+            <if test="waterlevel != null "> and waterlevel = #{waterlevel}</if>
+            <if test="uptime != null "> and uptime = #{uptime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTDeviceById" parameterType="Long" resultMap="TDeviceResult">
+        <include refid="selectTDeviceVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTDevice" parameterType="TDevice" useGeneratedKeys="true" keyProperty="id">
+        insert into t_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="station != null">station,</if>
+            <if test="temperature != null">temperature,</if>
+            <if test="waterlevel != null">waterlevel,</if>
+            <if test="uptime != null">uptime,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="station != null">#{station},</if>
+            <if test="temperature != null">#{temperature},</if>
+            <if test="waterlevel != null">#{waterlevel},</if>
+            <if test="uptime != null">#{uptime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTDevice" parameterType="TDevice">
+        update t_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="station != null">station = #{station},</if>
+            <if test="temperature != null">temperature = #{temperature},</if>
+            <if test="waterlevel != null">waterlevel = #{waterlevel},</if>
+            <if test="uptime != null">uptime = #{uptime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTDeviceById" parameterType="Long">
+        delete from t_device where id = #{id}
+    </delete>
+
+    <delete id="deleteTDeviceByIds" parameterType="String">
+        delete from t_device where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

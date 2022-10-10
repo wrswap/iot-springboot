@@ -198,7 +198,8 @@
                 <artifactId>ruoyi-common</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
-
+<!--            io.netty-->
+        
         </dependencies>
     </dependencyManagement>
 

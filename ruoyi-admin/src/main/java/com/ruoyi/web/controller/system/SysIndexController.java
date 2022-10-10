@@ -1,16 +1,5 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.ShiroConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -23,12 +12,28 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.shiro.service.SysPasswordService;
+import com.ruoyi.iot.domain.TDevice;
+import com.ruoyi.iot.domain.THistory;
+import com.ruoyi.iot.service.ITDeviceService;
+import com.ruoyi.iot.service.ITHistoryService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 首页 业务处理
- * 
+ *
  * @author ruoyi
  */
 @Controller
@@ -125,15 +130,44 @@ public class SysIndexController extends BaseController
     {
         CookieUtils.setCookie(response, "nav-style", style);
     }
+    //注入物联网终端数据操作服务
+    @Autowired
+    protected ITDeviceService itDeviceService;
+    //注入历史数据操作服务
+    @Autowired
+    protected ITHistoryService itHistoryService;
 
     // 系统介绍
+    //首页
     @GetMapping("/system/main")
     public String main(ModelMap mmap)
     {
-        mmap.put("version", RuoYiConfig.getVersion());
+        //获得物联网终端设备数据
+        List<TDevice> devices = itDeviceService.selectTDeviceList(null);
+        //把第一个记录数据传送到前端
+        TDevice device = devices.get(0);
+        //MVC方式向前端页面传递参数/数据
+        mmap.put("device",device);
+        //mmap.put("version", RuoYiConfig.getVersion());
         return "main";
     }
 
+    //历史数据接口
+    @GetMapping("/system/getHistory")
+    @ResponseBody
+    public AjaxResult getHistory(THistory tHistory){
+        //查询历史数据
+        List<THistory> tHistories = itHistoryService.selectTHistoryList(tHistory);
+        //响应前端请求，返回数据
+        return AjaxResult.success("ok",tHistories);
+    }
+
+    //定义历史曲线页面路径
+    @GetMapping("/system/HistoryCurve")
+    public String getHistoryCurve(){
+        return "historyCurve";
+    }
+    //
     // content-main class
     public String contentMainClass(Boolean footer, Boolean tagsView)
     {

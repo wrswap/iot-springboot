@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.THistoryMapper">
+    
+    <resultMap type="THistory" id="THistoryResult">
+        <result property="id"    column="id"    />
+        <result property="deviceid"    column="deviceid"    />
+        <result property="tempertrue"    column="tempertrue"    />
+        <result property="waterlevel"    column="waterlevel"    />
+        <result property="uptime"    column="uptime"    />
+    </resultMap>
+
+    <sql id="selectTHistoryVo">
+        select id, deviceid, tempertrue, waterlevel, uptime from t_history
+    </sql>
+
+    <select id="selectTHistoryList" parameterType="THistory" resultMap="THistoryResult">
+        <include refid="selectTHistoryVo"/>
+        <where>  
+            <if test="deviceid != null "> and deviceid = #{deviceid}</if>
+            <if test="tempertrue != null "> and tempertrue = #{tempertrue}</if>
+            <if test="waterlevel != null "> and waterlevel = #{waterlevel}</if>
+            <if test="uptime != null "> and uptime = #{uptime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTHistoryById" parameterType="Long" resultMap="THistoryResult">
+        <include refid="selectTHistoryVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTHistory" parameterType="THistory">
+        insert into t_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="deviceid != null">deviceid,</if>
+            <if test="tempertrue != null">tempertrue,</if>
+            <if test="waterlevel != null">waterlevel,</if>
+            <if test="uptime != null">uptime,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="deviceid != null">#{deviceid},</if>
+            <if test="tempertrue != null">#{tempertrue},</if>
+            <if test="waterlevel != null">#{waterlevel},</if>
+            <if test="uptime != null">#{uptime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTHistory" parameterType="THistory">
+        update t_history
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceid != null">deviceid = #{deviceid},</if>
+            <if test="tempertrue != null">tempertrue = #{tempertrue},</if>
+            <if test="waterlevel != null">waterlevel = #{waterlevel},</if>
+            <if test="uptime != null">uptime = #{uptime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTHistoryById" parameterType="Long">
+        delete from t_history where id = #{id}
+    </delete>
+
+    <delete id="deleteTHistoryByIds" parameterType="String">
+        delete from t_history where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
